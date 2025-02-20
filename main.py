@@ -1,49 +1,79 @@
 import cv2
-from filters import apply_blur, apply_canny, apply_gray
-from interface import create_window
+import numpy as np
+from modulos.filters import FilterOpenCV
+from modulos.detectors import DetectorOpenCV
+from modulos.segmentations import Segmentation
+from modulos.interface import create_window
 import PySimpleGUI as sg
 
+class VideoProcessor:
+    def __init__(self):
+        self.__window = create_window()
+        self.__cap = None
+        self.__filters = FilterOpenCV()
+        self.__detectors = DetectorOpenCV()
+        self.__segmentation = Segmentation()
+        while True:
+            event, values = self.__window.read(timeout=20)
 
-def main():
-    window = create_window()
-    cap = None
-
-    while True:
-        event, values = window.read(timeout=20)
-
-        if event in (sg.WIN_CLOSED, 'Salir'):
-            break
-
-        if event == 'Iniciar' and cap is None:
-            cap = cv2.VideoCapture(0)
-
-        if event == 'Detener' and cap is not None:
-            cap.release()
-            cap = None
-            cv2.destroyAllWindows()
-
-        if cap is not None and cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
+            if event in (sg.WIN_CLOSED, 'Salir'):
                 break
 
-            if values['BLUR']:
-                frame = apply_blur(frame)
+            if event == 'Iniciar' and self.__cap is None:
+                self.__cap = cv2.VideoCapture(0)
 
-            if values['CANNY']:
-                frame = apply_canny(frame)
+            if event == 'Detener' and self.__cap is not None:
+                self.__cap.release()
+                self.__cap = None
+                cv2.destroyAllWindows()
 
-            if values['GRAY']:
-                frame = apply_gray(frame)
-                frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
+            if self.__cap is not None and self.__cap.isOpened():
+                ret, frame = self.__cap.read()
+                if not ret:
+                    break
+                
+                self.__filters.set_frame(frame)
+                self.__detectors.set_frame(frame)
+                self.__segmentation.set_frame(frame)
+                self.__segmentation.set_color_range()
 
-            cv2.imshow('Video', frame)
+                if values['BLUR']:
+                    frame = self.__filters.apply_blur()
 
-    if cap is not None:
-        cap.release()
-    cv2.destroyAllWindows()
-    window.close()
+                if values['CANNY']:
+                    frame = self.__filters.apply_canny()
 
+                if values['SOBEL']:
+                    frame = self.__filters.apply_sobel()
+
+                if values['GRAY']:
+                    frame = self.__filters.apply_gray()
+                
+                if values['HARRISCORNER']:
+                    frame = self.__detectors.apply_detect_harris_corner()
+
+                if values['FAST']:
+                    frame = self.__detectors.apply_detect_FAST()
+                    
+                if values ['SIFT']:
+                    frame = self.__detectors.apply_detect_SIFT()
+
+                if values['THRESHOLDING']:
+                    frame = self.__segmentation.apply_thresholding()
+
+                if values ['COLORSEGM']:
+                    color_space = values['COLOR_SPACE']
+                    frame = self.__segmentation.apply_color_segmentation(color_space=color_space)
+
+                if values ['BORDECTSEGM']:
+                    frame = self.__segmentation.apply_segmentation_border_detection()
+                                
+                cv2.imshow('Video', frame)
+
+        if self.__cap is not None:
+            self.__cap.release()
+        cv2.destroyAllWindows()
+        self.__window.close()
 
 if __name__ == '__main__':
-    main()
+ video_processor = VideoProcessor()

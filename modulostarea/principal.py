@@ -39,6 +39,9 @@ class VideoProcessor:
                     high_hsv = (values['HIGH_H'], values['HIGH_S'], values['HIGH_V'])
                     self.__segmentation.set_color_ranges(*low_hsv, *high_hsv)
                     frame = self.__segmentation.apply_color_segmentation(color_space=color_space)
+
+                if values['SEGMKMEANS']:  # Nueva opción para K-means
+                    frame = self.__segmentation.apply_kmeans_segmentation(k=3)
   
                 if values['DECTCONT']:
                     frame = self.__segmentation.apply_border_detector()

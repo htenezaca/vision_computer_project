@@ -7,6 +7,7 @@ def create_interface():
         [sg.Text('Segmentación y Detección')],
         [
         sg.Checkbox('Segmentación de Color HSV', key='SEGMHSV'),
+        sg.Checkbox('Segmentación K-means', key='SEGMKMEANS'),
         sg.Checkbox('Detección de Contornos', key='DECTCONT'),
         sg.Checkbox('Dibujar Círculos', key='DRAWCIRC')],
         [sg.Text('Rango Bajo (H, S, V):')],

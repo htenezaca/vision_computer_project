@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 from colorange import ColorRange
-from circledetect import CircleDetector
 
 
 class SegmentationOpenCV:
@@ -34,7 +33,7 @@ class SegmentationOpenCV:
         return self.__detect_border
     
     def detect_circles(self):
-        circles = cv2.HoughCircles(self.__mask, cv2.HOUGH_GRADIENT, dp=1, minDist=20, param1=30, param2=30, minRadius=0, maxRadius=0)
+        circles = cv2.HoughCircles(self.__mask, cv2.HOUGH_GRADIENT, dp=1, minDist=10, param1=20, param2=20, minRadius=0, maxRadius=0)
         
         if circles is not None:
             circles = np.uint8(np.around(circles)) 
@@ -51,8 +50,17 @@ class SegmentationOpenCV:
                 cv2.circle(self.__color_segmentation, (circle[0], circle[1]), circle[2], (0, 0, 255), 2)  
                 cv2.circle(self.__color_segmentation, (circle[0], circle[1]), 5, (0, 0, 255), -1) 
                 
-            return self.__color_segmentation
+            return self.__color_segmentation      
+        
+    def apply_kmeans_segmentation(self, k=5):
+        Z = self.__frame.reshape((-1, 5))
+        Z = np.float32(Z)
 
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
+        _, labels, centers = cv2.kmeans(Z, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
 
+        centers = np.uint8(centers)
+        segmented_image = centers[labels.flatten()]
+        self.__color_segmentation = segmented_image.reshape(self.__frame.shape)
 
-
+        return self.__color_segmentation

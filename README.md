@@ -1,10 +1,12 @@
 # Proyecto Final de Visión por Computadora
 
 ## Descripción
-Esta aplicación permite aplicar filtros de procesamiento de imágenes en tiempo real usando OpenCV y una interfaz gráfica construida con 
+
+Esta aplicación permite aplicar filtros de procesamiento de imágenes en tiempo real usando OpenCV y una interfaz gráfica construida con
 PySimpleGUI.
 
 ## Estructura del Proyecto
+
 ```
 vision_app/
 ├── main.py               # Código principal para correr la app
@@ -19,19 +21,25 @@ vision_app/
 ```
 
 ## Instalación
+
 1. Clonar el repositorio.
 2. Crear y activar un entorno virtual:
+
 ```bash
 python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
+source venv/bin/activate  # En Windows: venv/Scripts/activate
 ```
+
 3. Instalar dependencias:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ## Uso
+
 Ejecutar la aplicación con:
+
 ```bash
 python main.py
 ```
@@ -39,10 +47,10 @@ python main.py
 Selecciona los filtros que quieres aplicar y observa los resultados en tiempo real.
 
 ## Extensiones
+
 - Agrega tus propios filtros en `filters.py`.
 - Implementa detección de puntos de interés en `detectors.py`.
 - Personaliza la interfaz en `interface.py`.
-
 
 ## Aquí va a ir el informe
 
